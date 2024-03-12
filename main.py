@@ -1,5 +1,7 @@
 import random
 import pandas as pd
+import time
+import os
 def main():
     runQuestions()
 
@@ -7,17 +9,19 @@ def main():
 def runQuestions():
     s = input('Stacks or queues? 1 for stacks, 0 for queeues')
     if s == '1':
-        s = doStacks()
+        s = doStacks(0)
         print(f'You got {s} points')
-        data = pd.read_csv('highscore.csv')
-        data = list(data)
+        data = pd.read_csv('highscores.csv')
+        data = [int(i) for i in list(data['scores'])]
         hs = max(data)
-        if hs < s:
+        if int(hs) < s:
             print(f'Congrats on beating the current highscore, {hs}')
         else:
             print(f'You didnt beat the current highscore, {hs}')
+        print(f'Your score was {s}')
         data.append(s)
-        data.to_csv('highscore.csv')
+        data = pd.DataFrame({'scores':data})
+        data.to_csv('highscores.csv')
     else:
         doQueues()
 
@@ -28,7 +32,7 @@ def doStacks(score = 0):
     print(f'This is the current stack: {question}')
     random.seed(seedd)
     function = [random.choice(['push','pop']) for i in range(seedd%15)]
-    final_actions = [[i,random.randint(1,20)] for i in function]
+    final_actions = [[i,random.randint(1,100)] for i in function]
     print('A student does the follow actions')
     for i,j in final_actions:
         if i == 'push':
@@ -46,6 +50,7 @@ def doStacks(score = 0):
     else:
         n = random.randint(0, len(question) - 1)
         answer = question[n]
+    print(f'Your current score is {score}')
     print(f'What is the item in the {n}th position(0 indexing). Enter null to escape and -1 if nothing exists at that point')
     c = input('Enter -->')
     if c == 'null':
@@ -53,10 +58,11 @@ def doStacks(score = 0):
     else:
         if int(c) == answer:
             print('Correct!')
-            doStacks(score + 1)
+
+            return doStacks(score + 1)
         else:
-            print('Wrong')
-            doStacks(score)
+            print(f'Wrong, the current answer was {answer}')
+            return doStacks(score)
 
 def doQueues():
     pass
@@ -65,7 +71,7 @@ def doQueues():
 def generateQuestion(seed):
     num_of_list = 5 + seed%5
     random.seed(seed)
-    list = [random.randint(1,100000) for i in range(1,num_of_list)]
+    list = [random.randint(1,1000) for i in range(1,num_of_list)]
     return list
 
 main()
