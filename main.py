@@ -1,6 +1,6 @@
 import random
 import pandas as pd
-import time
+import time 
 import os 
 def main():
     runQuestions()
